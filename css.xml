@@ -1,0 +1,539 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="style_guide.xsl"?>
+<GUIDE title="StackSource CSS Style Guide">
+  <p class="revision">
+    Revision 1
+  </p>
+  <address>
+    Derived from the
+    <a href="https://google.github.io/styleguide/htmlcssguide.xml#CSS_Style_Rules">
+      Google HTML/CSS Style Guide
+    </a>
+  </address>
+
+  <OVERVIEW>
+    <CATEGORY title="Important Note">
+      <STYLEPOINT title="Displaying Hidden Details in This Guide">
+        <SUMMARY>
+          This style guide contains many details that are initially
+          hidden from view. They are marked by the triangle icon, which you
+          see here on your left. Click it now.
+          You should see “Hooray” appear below.
+        </SUMMARY>
+        <BODY>
+          <p>
+            Hooray! Now you know you can expand points to get more
+            details. Alternatively, there’s a “toggle all” at the
+            top of this document.
+          </p>
+        </BODY>
+      </STYLEPOINT>
+    </CATEGORY>
+    <CATEGORY title="Background">
+
+      <p>
+        This document defines formatting and style rules for
+        CSS. It aims at improving collaboration, code quality, and
+        enabling supporting infrastructure. It applies to raw,
+        working files that use CSS, including Tempo React Component
+        files with embedded CSS.
+      </p>
+    </CATEGORY>
+  </OVERVIEW>
+
+  <CATEGORY title="CSS Style Rules">
+    <STYLEPOINT title="CSS Validity">
+      <SUMMARY>
+        Use valid CSS where possible.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Unless dealing with CSS validator bugs or requiring
+          proprietary syntax, use valid CSS code.
+        </p>
+        <p>
+          Use tools such as the <a href="https://jigsaw.w3.org/css-validator/">W3C
+          CSS validator</a> to test.
+        </p>
+        <p>
+          Using valid CSS is a measurable baseline quality attribute
+          that allows to spot CSS code that may not have any effect
+          and can be removed, and that ensures proper CSS usage.
+        </p>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="ID and Class Naming">
+      <SUMMARY>
+        Use meaningful or generic ID and class names.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Instead of presentational or cryptic names, always use ID
+          and class names that reflect the purpose of the element in
+          question, or that are otherwise generic.
+        </p>
+        <p>
+          Names that are specific and reflect the purpose of the
+          element should be preferred as these are most understandable
+          and the least likely to change.
+        </p>
+        <p>
+          Generic names are simply a fallback for elements that have no
+          particular or no meaning different from their siblings. They are
+          typically needed as “helpers.”
+        </p>
+        <p>
+          Using functional or generic names reduces the probability of
+          unnecessary document or template changes.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended: meaningless */
+          #yee-1901 {}
+
+          /* Not recommended: presentational */
+          .button-green {}
+          .clear {}
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended: specific */
+          #gallery {}
+          #login {}
+          .video {}
+
+          /* Recommended: generic */
+          .aux {}
+          .alt {}
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="ID and Class Name Style">
+      <SUMMARY>
+        Use ID and class names that are as short as reasonable but as long as
+        necessary.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Try to convey what an ID or class is about.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended */
+          .atr {}
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          .author {}
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Tag Name Selectors">
+      <SUMMARY>
+        Avoid qualifying ID and class names with tag name selectors.
+      </SUMMARY>
+      <BODY>
+        <p>Unless necessary (for example with helper classes), do not
+          use element names in conjunction with IDs or classes.
+        </p>
+        <p>
+          Avoiding unnecessary ancestor selectors is useful for <a href="http://www.stevesouders.com/blog/2009/06/18/simplifying-css-selectors/">performance
+          reasons</a>.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended */
+          ul#example {}
+          div.error {}
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          #example {}
+          .error {}
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Shorthand Properties">
+      <SUMMARY>
+        Use shorthand properties where possible.
+      </SUMMARY>
+      <BODY>
+        <p>
+          CSS offers a variety of <a href="https://www.w3.org/TR/CSS21/about.html#shorthand">shorthand</a>
+          properties (like <code>font</code>)
+          that should be used whenever possible, even in cases where
+          only one value is explicitly set.
+        </p>
+        <p>
+          Using shorthand properties is useful for code efficiency and
+          understandability.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended */
+          border-top-style: none;
+          font-family: palatino, georgia, serif;
+          font-size: 100%;
+          line-height: 1.6;
+          padding-bottom: 2em;
+          padding-left: 1em;
+          padding-right: 1em;
+          padding-top: 0;
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          border-top: 0;
+          font: 100%/1.6 palatino, georgia, serif;
+          padding: 0 1em 2em;
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="0 and Units">
+      <SUMMARY>
+        Omit unit specification after “0” values.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Do not use units after <code>0</code> values unless they are
+          required.
+        </p>
+        <CODE_SNIPPET>
+          margin: 0;
+          padding: 0;
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Leading 0s">
+      <SUMMARY>
+        Include the leading “0”s before a decimal point.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Put a <code>0</code> in front of values or lengths
+          between -1 and 1.
+        </p>
+        <CODE_SNIPPET>
+          font-size: 0.8em;
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Hexadecimal Notation">
+      <SUMMARY>
+        Lowercase, 3 character when possible
+      </SUMMARY>
+      <BODY>
+        <p>
+          Use lowercase letters in hexadecimal values.
+        </p>
+        <p>
+          For color values that permit it, 3 character hexadecimal
+          notation is shorter and more succinct.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended */
+          color: #eebbcc;
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          color: #ebc;
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="ID and Class Name Delimiters">
+      <SUMMARY>
+        Separate words in ID and class names by a hyphen.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Do not concatenate words and abbreviations in selectors by
+          any characters (including none at all) other than hyphens,
+          in order to improve understanding and scannability.
+        </p>
+        <p>
+          In addition, some preprocessors may use underscore as a special
+          character, so it is reserved for those contexts.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended: does not separate the words “demo” and “image” */
+          .demoimage {}
+
+          /* Not recommended: uses underscore instead of hyphen */
+          .error_status {}
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          #video-id {}
+          .ads-sample {}
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Hacks">
+      <SUMMARY>
+        Avoid user agent detection as well as CSS “hacks”—try a different
+        approach first.
+      </SUMMARY>
+      <BODY>
+        <p>
+          It’s tempting to address styling differences over user
+          agent detection or special CSS filters, workarounds, and
+          hacks. Both approaches should be considered last resort in
+          order to achieve and maintain an efficient and manageable
+          code base. Put another way, giving detection and hacks a
+          free pass will hurt projects in the long run as projects
+          tend to take the way of least resistance. That is, allowing
+          and making it easy to use detection and hacks means using
+          detection and hacks more frequently—and more frequently
+          is too frequently.
+        </p>
+
+
+      </BODY>
+    </STYLEPOINT>
+  </CATEGORY>
+
+  <CATEGORY title="CSS Formatting Rules">
+    <STYLEPOINT title="Declaration Order">
+      <SUMMARY>
+        display, positioning, sizing, other
+      </SUMMARY>
+      <BODY>
+        <p>
+          In general, styles should follow the sort order:
+          display, positioning, sizing, other.
+        </p>
+        <p>
+          The <code>display</code> style goes at the top, followed by
+          styles that affect positioning like
+          <code>top</code>, <code>bottom</code>, <code>left</code>,
+          <code>right</code>, and <code>float</code>.
+          Next is styles which affect sizing, including <code>width</code>,
+          <code>height</code>, <code>margin</code>, and <code>padding</code>.
+          Other styles come last, and don't really have a defined order.
+        </p>
+        <CODE_SNIPPET>
+          display: block;
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          width: 100px;
+          min-height: 100px;
+          margin: 16px;
+          padding: 8px;
+          background: fuchsia;
+          border: 1px solid #000;
+          text-align: center;
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Block Content Indentation">
+      <SUMMARY>
+        Indent all block content.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Indent all <a href="https://www.w3.org/TR/CSS21/syndata.html#block">block
+          content</a>, that is rules within rules as well as declarations, so to
+          reflect hierarchy and improve understanding.
+        </p>
+        <CODE_SNIPPET>
+          @media screen, projection {
+
+            html {
+              background: #fff;
+              color: #444;
+            }
+
+          }
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Declaration Stops">
+      <SUMMARY>
+        Use a semicolon after every declaration.
+      </SUMMARY>
+      <BODY>
+        <p>
+          End every declaration with a semicolon for consistency and
+          extensibility reasons.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended */
+          .test {
+            display: block;
+            height: 100px
+          }
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          .test {
+            display: block;
+            height: 100px;
+          }
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Property Name Stops">
+      <SUMMARY>
+        Use a space after a property name’s colon.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Always use a single space between property and value (but no
+          space between property and colon) for consistency reasons.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended */
+          h3 {
+            font-weight:bold;
+          }
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          h3 {
+            font-weight: bold;
+          }
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Declaration Block Separation">
+      <SUMMARY>
+        Use a space between the last selector and the declaration block.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Always use a single space between the last selector and the opening
+          brace that begins the <a href="https://www.w3.org/TR/CSS21/syndata.html#rule-sets">declaration
+          block</a>.
+        </p>
+        <p>
+          The opening brace should be on the same line as the last selector in a
+          given rule.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended: missing space */
+          #video{
+            margin-top: 1em;
+          }
+
+          /* Not recommended: unnecessary line break */
+          #video
+          {
+            margin-top: 1em;
+          }
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          #video {
+            margin-top: 1em;
+          }
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Selector and Declaration Separation">
+      <SUMMARY>
+        Separate selectors and declarations by new lines.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Always start a new line for each selector and declaration.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended */
+          a:focus, a:active {
+            position: relative; top: 1px;
+          }
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          h1,
+          h2,
+          h3 {
+            font-weight: normal;
+            line-height: 1.2;
+          }
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="Rule Separation">
+      <SUMMARY>
+        Separate rules by new lines.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Always put a blank line (two line breaks) between rules.
+        </p>
+        <CODE_SNIPPET>
+          html {
+            background: #fff;
+          }
+
+          body {
+            margin: auto;
+            width: 50%;
+          }
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+    <STYLEPOINT title="CSS Quotation Marks">
+      <SUMMARY>
+        Use single quotation marks for attribute selectors and property values.
+      </SUMMARY>
+      <BODY>
+        <p>
+          Use single (<code>''</code>) rather than double (<code>""</code>)
+          quotation marks for attribute selectors or property values. Do not
+          use quotation marks in URI values (<code>url()</code>).
+        </p>
+        <p>
+          Exception: If you do need to use the <code>@charset</code> rule,
+          use double quotation marks—<a href="https://www.w3.org/TR/CSS21/syndata.html#charset">single
+          quotation marks are not permitted</a>.
+        </p>
+        <BAD_CODE_SNIPPET>
+          /* Not recommended */
+          @import url("//www.google.com/css/maia.css");
+
+          html {
+            font-family: "open sans", arial, sans-serif;
+          }
+        </BAD_CODE_SNIPPET>
+        <CODE_SNIPPET>
+          /* Recommended */
+          @import url(//www.google.com/css/maia.css);
+
+          html {
+            font-family: 'open sans', arial, sans-serif;
+          }
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+  </CATEGORY>
+
+  <PARTING_WORDS>
+    <p>
+      <em>Be consistent.</em>
+    </p>
+    <p>
+      If you’re editing code, take a few minutes to look at the code
+      around you and determine its style. If they use spaces around
+      all their arithmetic operators, you should too. If their
+      comments have little boxes of hash marks around them, make your
+      comments have little boxes of hash marks around them too.
+    </p>
+    <p>
+      The point of having style guidelines is to have a common vocabulary
+      of coding so people can concentrate on what you’re saying rather
+      than on how you’re saying it. We present global style rules here so
+      people know the vocabulary, but local style is also important. If
+      code you add to a file looks drastically different from the existing
+      code around it, it throws readers out of their rhythm when they go to
+      read it. Avoid this.
+    </p>
+  </PARTING_WORDS>
+
+  <p align="right">
+    Revision 1
+  </p>
+  <address>
+    Derived from the
+    <a href="https://google.github.io/styleguide/htmlcssguide.xml#CSS_Style_Rules">
+      Google HTML/CSS Style Guide
+    </a>
+  </address>
+</GUIDE>
