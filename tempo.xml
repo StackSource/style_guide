@@ -1,0 +1,1362 @@
+<?xml version = '1.0'?>
+<?xml-stylesheet type="text/xsl" href="style_guide.xsl"?>
+<GUIDE title="StackSource Tempo Style Guide">
+  <p class="revision">
+    Revision 1
+  </p>
+
+  <address>
+    Derived from the
+    <a href="https://google.github.io/styleguide/javascriptguide.xml">
+      Google JavaScript Style Guide
+    </a>
+  </address>
+  <OVERVIEW>
+    <CATEGORY title="Important Note">
+      <STYLEPOINT title="Displaying Hidden Details in this Guide">
+        <SUMMARY>
+          This style guide contains many details that are initially
+          hidden from view.  They are marked by the triangle icon, which you
+          see here on your left.  Click it now.
+          You should see "Hooray" appear below.
+        </SUMMARY>
+        <BODY>
+          <p>
+            Hooray!  Now you know you can expand points to get more
+            details.  Alternatively, there's a "toggle all" at the
+            top of this document.
+          </p>
+        </BODY>
+      </STYLEPOINT>
+    </CATEGORY>
+    <CATEGORY title="Background">
+      <p>
+        Tempo is the main programming language used by StackSource.
+        This style guide is a list of <em>do</em>s and <em>don't</em>s for
+        Tempo programs.
+      </p>
+    </CATEGORY>
+
+    <CATEGORY title="Be Consistent">
+      <p>
+        If you're editing code, take a few minutes to look at the code
+        around you and determine its style.  If they use spaces around
+        all their arithmetic operators, you should too.  If their
+        comments have little boxes of hash marks around them, make your
+        comments have little boxes of hash marks around them too.
+      </p>
+
+      <p>
+        The point of having style guidelines is to have a common vocabulary
+        of coding so people can concentrate on what you're saying rather
+        than on how you're saying it.  We present global style rules here so
+        people know the vocabulary, but local style is also important.  If
+        code you add to a file looks drastically different from the existing
+        code around it, it throws readers out of their rhythm when they go to
+        read it.  Avoid this.
+      </p>
+
+    </CATEGORY>
+  </OVERVIEW>
+
+  <CATEGORY title="Tempo Language Rules">
+    <STYLEPOINT title="let vs final">
+      <SUMMARY>
+        Declarations with <code>final</code> are preferred
+      </SUMMARY>
+      <BODY>
+        <DECISION>
+          <p>
+            Unless you have a specific reason to do otherwise, you should
+            declare all identifiers with <code>final</code> rather than
+            <code>let</code>. An identifier declared with <code>final</code> can
+            only be assigned once. It's much easier to reason about code when it
+            is crystal clear that an identifiers value cannot change. It gives
+            the programmer fewer things to worry about when debugging a
+            difficult problem.
+          </p>
+          <p>
+            However, the use of <code>let</code> is not banned, and can
+            sometimes help make code clearer or more performant in a critical
+            code path.
+          </p>
+        </DECISION>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Constants">
+      <SUMMARY>
+        Use <code>NAMES_LIKE_THIS</code> for constant <em>values</em>.
+      </SUMMARY>
+      <BODY>
+        <DECISION>
+          <SUBSECTION title="Constant values">
+          <p>Constant names use CONSTANT_CASE: all uppercase letters, with words
+             separated by underscores. But what is a constant, exactly?</p>
+
+          <p>Every constant must be declared as <code>final</code>, but not all
+             identifiers declared as <code>final</code> are constants. Before
+             choosing constant case, consider whether the field really feels
+             like a constant. For example, if any of that instance's observable
+             state can change, it is almost certainly not a constant. Merely
+             intending to never mutate the object is generally not enough.</p>
+
+          <p>Identifiers which are only used within a small portion of code
+             (such as within a short function) would normally not be written
+             in constant case.</p>
+
+          <SUBSECTION title="Examples">
+
+            <p>Note that <code>final</code> does not necessarily imply
+              <code>CONSTANT_CASE</code>.
+
+              However, <code>CONSTANT_CASE</code>
+              <em>does</em> imply <code>final</code>.
+            </p>
+
+            <CODE_SNIPPET>
+              // Request timeout in milliseconds.
+              final TIMEOUT_IN_MILLISECONDS = 60000;
+            </CODE_SNIPPET>
+
+            <p>This number is likely defined as a configuration constant for a
+               module, as a quick way to make it easy to update this value in
+               the future by editing one line.</p>
+
+            <CODE_SNIPPET>
+              // Map of URL to response string.
+              final fetchedUrlCache = new Map&lt;string, string&gt;();
+            </CODE_SNIPPET>
+
+            <p>Even though the identifier <code>fetchedUrlCache</code> will
+               always be the same map, the map itself is not immutable, and will
+               likely change its internal state during the execution of the
+               program. Therefore, we don't use constant case.</p>
+
+            <CODE_SNIPPET>
+              enum Colors {
+                RED,
+                GREEN,
+                BLUE,
+              }
+            </CODE_SNIPPET>
+
+            <p>Enum values should always use constant case.</p>
+          </SUBSECTION>
+        </SUBSECTION>
+
+        </DECISION>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Semicolons">
+      <SUMMARY>
+        Always use semicolons.
+      </SUMMARY>
+      <BODY>
+        <p>ECMAScript allows semicolons to be inferred when they are missing
+           when possible. However, Tempo does not. Forgetting a semicolon will
+           result in the compiler notifying you with a syntax error.</p>
+
+        <SUBSECTION title="Clarification: Semicolons and functions">
+          <p>Semicolons should be included at the end of function expressions,
+            but not at the end of function declarations. The distinction is
+            best illustrated with an example:</p>
+          <CODE_SNIPPET>
+            final foo = f {
+              return true;
+            };  // semicolon here.
+
+            f foo {
+              return true;
+            }  // no semicolon here.
+          </CODE_SNIPPET>
+
+          <p>However, a semicolon is necessary if your function declaration does
+             not have a block body.</p>
+
+          <CODE_SNIPPET>
+            f foo: true; // semicolon here.
+          </CODE_SNIPPET>
+        </SUBSECTION>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Nested functions">
+      <SUMMARY>Yes</SUMMARY>
+      <BODY>
+        <p>Nested functions can be very useful, for example in the creation of
+          continuations and for the task of hiding helper functions. Feel free
+          to use them.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Exceptions">
+      <SUMMARY>Yes</SUMMARY>
+      <BODY>
+        <p>You basically can't avoid exceptions if you're doing something
+          non-trivial (using an application development framework, etc.).
+          Go for it.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Custom exceptions">
+      <SUMMARY>Yes</SUMMARY>
+      <BODY>
+        <p>Without custom exceptions, returning error information from a
+          function that also returns a value can be tricky, not to mention
+          inelegant.  Bad solutions include passing in a reference type to hold
+          error information or always returning Objects with a potential
+          error member.  These basically amount to a primitive exception
+          handling hack. Feel free to use custom exceptions when
+          appropriate.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Wrapper objects for primitive types">
+      <SUMMARY>No</SUMMARY>
+      <BODY>
+        <p>There's no reason to use wrapper objects for primitive types, plus
+          they're dangerous:</p>
+        <BAD_CODE_SNIPPET>
+          final x = new Boolean(false);
+          if x {
+            alert('hi');  // Shows 'hi'.
+          }
+        </BAD_CODE_SNIPPET>
+        <p>Don't do it!</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="delete">
+      <SUMMARY>Prefer <code>this.foo = null</code>.</SUMMARY>
+      <BODY>
+        <CODE_SNIPPET>
+          class Foo {
+            dispose() {
+              this.property = null;
+            }
+          }
+        </CODE_SNIPPET>
+        <p>Instead of:</p>
+        <BAD_CODE_SNIPPET>
+          class Foo {
+            dispose() {
+              delete this.property;
+            }
+          };
+        </BAD_CODE_SNIPPET>
+        <p>In modern JavaScript engines, changing the number of properties on an
+          object is much slower than reassigning the values. The
+          <code>delete</code> keyword should be avoided except when it is
+          necessary to remove a property from an object's iterated list of keys,
+          or to change the result of <code>Object.keys</code>.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Closures">
+      <SUMMARY>Yes</SUMMARY>
+      <BODY>
+        <p>The ability to create closures is perhaps the most useful and often
+          overlooked feature of JS. Here is
+          <a href="http://jibbering.com/faq/faq_notes/closures.html">
+            a good description of how closures work</a>.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="eval()">
+      <SUMMARY>
+        Only for code loaders and REPL (Read–eval–print loop)
+      </SUMMARY>
+      <BODY>
+        <p><code>eval()</code> makes for confusing semantics and is dangerous
+          to use if the string being <code>eval()</code>'d contains user input.
+          There's usually a better, clearer, and safer way to write your code,
+          so its use is generally not permitted.</p>
+
+        <p>For RPC you can always use JSON and read the result using
+          <code>JSON.parse()</code> instead of <code>eval()</code>.</p>
+
+        <p>Let's assume we have a server that returns something like this:</p>
+
+        <CODE_SNIPPET>
+          {
+            "name": "Alice",
+            "id": 31502,
+            "email": "looking_glass@example.com"
+          }
+        </CODE_SNIPPET>
+
+        <BAD_CODE_SNIPPET>
+          final userInfo = eval(feed);
+          final email = userInfo['email'];
+        </BAD_CODE_SNIPPET>
+
+        <p>If the feed was modified to include malicious JavaScript code, then
+          if we use <code>eval</code> then that code will be executed.</p>
+
+        <CODE_SNIPPET>
+          final userInfo = JSON.parse(feed);
+          final email = userInfo['email'];
+        </CODE_SNIPPET>
+
+        <p>With <code>JSON.parse</code>, invalid JSON (including all executable
+          JavaScript) will cause an exception to be thrown.</p>
+
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Associative Arrays">
+      <SUMMARY>
+        Never use <code>Array</code> as a map/hash/associative array
+      </SUMMARY>
+      <BODY>
+        <p>Associative <code>Array</code>s are not allowed... or more precisely
+          you are not allowed to use non number indexes for arrays. If you need
+          a map/hash use <code>Map</code> or <code>Object</code> instead of
+          <code>Array</code> in these cases.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Multiline string literals">
+      <SUMMARY>Yes, with template literals</SUMMARY>
+      <BODY>
+        <p>Do not do this:</p>
+        <BAD_CODE_SNIPPET>
+          final myString = 'A rather long string of English text, an error \
+                            message actually that just keeps going and going \
+                            -- an error message to make the Energizer bunny \
+                            blush (right through those Schwarzenegger shades)! \
+                            Where was I? Oh yes, you\'ve got an error. Have a \
+                            nice day.';
+        </BAD_CODE_SNIPPET>
+        <p>Whitespace after the slash will result in tricky errors.</p>
+
+        <p>Use template literals instead:</p>
+        <CODE_SNIPPET>
+          final myString = ```
+            A rather long string of English text, an error message
+            actually that just keeps going and going -- an error
+            message to make the Energizer bunny blush (right through
+            those Schwarzenegger shades)! Where was I? Oh yes,
+            you've got an error.  Have a nice day.```;
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Array and Object literals">
+      <SUMMARY>Yes, for immutable objects</SUMMARY>
+      <BODY>
+        <p>Do not use the <code>Array</code> constructor with arguments.
+           Passing arguments to the <code>Array</code> constructor is
+           error-prone.</p>
+        <BAD_CODE_SNIPPET>
+          // Length is 3.
+          final a1 = new Array(x1, x2, x3);
+
+          // Length is 2.
+          final a2 = new Array(x1, x2);
+
+          // If x1 is a number and it is a natural number the length will be x1.
+          // If x1 is a number but not a natural number this will throw an
+          // exception.
+          // Otherwise the array will have one element with x1 as its value.
+          final a3 = new Array(x1);
+
+          // Length is 0.
+          final a4 = new Array();
+        </BAD_CODE_SNIPPET>
+        <p>Because of this, if someone changes the code to pass 1 argument
+          instead of 2 arguments, the array might not have the expected
+          length.</p>
+        <p>To avoid these kinds of weird cases, always use the more readable
+           array literal when you know the items the array will hold ahead of
+           time and the array is immutable.</p>
+        <CODE_SNIPPET>
+          var a = [x1, x2, x3];
+          var a2 = [x1, x2];
+          var a3 = [x1];
+          var a4 = [];
+        </CODE_SNIPPET>
+
+        <p>Array and Object literals create immutable objects in tempo, so use
+           the constructors (without arguments) when a mutable object is
+           desired.</p>
+
+        <BAD_CODE_SNIPPET>
+          final colors = [];
+          colors.push('red'); // Error
+
+          final o = {};
+          o['a'] = 0;
+          o['b'] = 1;
+          o['c'] = 2;
+        </BAD_CODE_SNIPPET>
+
+        <CODE_SNIPPET>
+          final colors = new Array();
+          colors.push('red');
+
+          final o = new Object();
+          o['a'] = 0;
+          o['b'] = 1;
+          o['c'] = 2;
+        </CODE_SNIPPET>
+
+        <p>Also consider using <code>Map</code> instead of <code>Object</code>
+           because it is more descriptive and allows you to specify types.</p>
+
+        <CODE_SNIPPET>
+          final m = new Map&lt;string, number&gt;();
+          m.set('a', 0);
+          m.set('b', 1);
+          m.set('c', 2);
+        </CODE_SNIPPET>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Modifying prototypes of builtin objects">
+      <SUMMARY>No</SUMMARY>
+      <BODY>
+        <p>Modifying builtins like <code>Object.prototype</code> and
+          <code>Array.prototype</code> are strictly forbidden.  Modifying other
+          builtins like <code>Function.prototype</code> is less dangerous but
+          still leads to hard to debug issues in production and should be
+          avoided.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Internet Explorer's Conditional Comments">
+      <SUMMARY>No</SUMMARY>
+      <BODY>
+        <p>Don't do this:</p>
+        <BAD_CODE_SNIPPET>
+        f foo {
+            /*@cc_on if (@_jscript) { return 2* @*/  3; /*@ } @*/
+        };
+        </BAD_CODE_SNIPPET>
+        <p>Conditional Comments hinder automated tools as they can vary the
+        JavaScript syntax tree at runtime.</p>
+      </BODY>
+    </STYLEPOINT>
+  </CATEGORY>
+
+  <CATEGORY title="Tempo Style Rules">
+    <STYLEPOINT title="Naming">
+      <SUMMARY>
+        <p>In general, use
+          <code>functionNamesLikeThis</code>,
+          <code>variableNamesLikeThis</code>,
+          <code>ClassNamesLikeThis</code>,
+          <code>EnumNamesLikeThis</code>,
+          <code>methodNamesLikeThis</code>,
+          <code>CONSTANT_VALUES_LIKE_THIS</code>,
+          <code>file_names_like_this.tempo</code>.
+        </p>
+      </SUMMARY>
+      <BODY>
+        <SUBSECTION title="Method and function parameter">
+          <p>Optional function parameters must assign a default value (even if
+             it's <code>null</code>.</p>
+
+          <p>Unused function parameters must begin with <code>unused_</code> or
+             be given no name.</p>
+
+          <CODE_SNIPPET>
+            // `bar` is an parameter which is not used by the `foo` function.
+            // `baz` is a parameter which is optional and defaults to 'default'.
+            f foo(unused_bar number, baz string = 'default') {
+              // ...
+            }
+          </CODE_SNIPPET>
+        </SUBSECTION>
+
+        <SUBSECTION title="Getters and Setters">
+          <p>Getters must not change observable state.</p>
+            <BAD_CODE_SNIPPET>
+              /**
+               * WRONG -- Do NOT do this.
+               */
+              final foo = {
+                get next() {
+                  return this.nextId++;
+                },
+              };
+            </BAD_CODE_SNIPPET>
+        </SUBSECTION>
+
+        <SUBSECTION title="Accessor functions">
+          <p>Getters and setters methods for properties are not required.
+            However, if they are used, then getters must be named
+            <code>getFoo()</code> and setters must be named
+            <code>setFoo(value)</code>. (For boolean getters,
+            <code>isFoo()</code> is also acceptable, and often sounds more
+            natural.)</p>
+        </SUBSECTION>
+
+        <SUBSECTION title="Filenames">
+          <p>Filenames should be all lowercase in order to avoid confusion on
+            case-sensitive platforms. Filenames should contain no punctuation
+            except for <code>_</code>.</p>
+        </SUBSECTION>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Custom toString() methods">
+      <SUMMARY>
+        Must always succeed without side effects.
+      </SUMMARY>
+      <BODY>
+        <p>You can control how your objects string-ify themselves by defining a
+          custom <code>toString()</code> method. This is fine, but you need
+          to ensure that your method (1) always succeeds and (2) does not have
+          side-effects. If your method doesn't meet these criteria, it's very
+          easy to run into serious problems. For example, if
+          <code>toString()</code> calls a method that does an
+          <code>assert</code>, <code>assert</code> might try to output the name
+          of the object in which it failed, which of course requires calling
+          <code>toString()</code>.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Deferred initialization">
+      <SUMMARY>OK for <code>final</code></SUMMARY>
+      <BODY>
+        <p>It isn't always possible to initialize variables at the point of
+          declaration, so deferred initialization is fine for identifiers
+          declared with <code>final</code>.</p>
+
+        <CODE_SNIPPET>
+          final foo;
+          if bar {
+            foo = 1;
+          } else {
+            foo = 2;
+          }
+        </CODE_SNIPPET>
+
+        <p>However, an identifier should never be used until it is initialized.
+           Even though we can't get away from <code>undefined</code> entirely in
+           Tempo, it's considered best practice to work with <code>null</code>
+           instead where possible. Therefore, it may be best to set any
+           unintialized variarbles declared with <code>let</code> to
+           <code>null</code> or some other default value depending on type.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Explicit scope">
+      <SUMMARY>Always</SUMMARY>
+      <BODY>
+        <p>Always use explicit scope - doing so increases portability and
+          clarity. For example, don't rely on <code>window</code> being in the
+          scope chain. You might want to use your function in another
+          application for which <code>window</code> is not the content
+          window.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Code formatting">
+      <SUMMARY>Expand for more information.</SUMMARY>
+      <BODY>
+        <p>We follow the
+           <a href="https://google.github.io/styleguide/cppguide.html#Formatting">
+              Google C++ formatting rules
+            </a>
+            in spirit, with the following additional clarifications.</p>
+        <SUBSECTION title="Curly Braces">
+          <p>Always start your curly braces on the same line as whatever they're
+             opening. For example:</p>
+          <CODE_SNIPPET>
+            if something {
+              // ...
+            } else {
+              // ...
+            }
+          </CODE_SNIPPET>
+        </SUBSECTION>
+        <SUBSECTION title="Array and Object Literals">
+          <p>Single-line array and object literals are allowed when they
+            fit on a line:</p>
+          <CODE_SNIPPET>
+            var arr = [1, 2, 3];  // No space after [ or before ].
+            var obj = {a: 1, b: 2, c: 3};  // No space after { or before }.
+          </CODE_SNIPPET>
+          <p>Multiline array literals and object literals are indented
+             2 spaces, with the braces on their own line, just like blocks.
+             You should use a trailing comma after the last entry in a multiline
+             array or object literal.</p>
+          <CODE_SNIPPET>
+            // Object initializer.
+            final inset = {
+              top: 10,
+              right: 20,
+              bottom: 15,
+              left: 12,
+            };
+
+            // Array initializer.
+            this.rows_ = [
+              '"Slartibartfast" &lt;fjordmaster@magrathea.com&gt;',
+              '"Zaphod Beeblebrox" &lt;theprez@universe.gov&gt;',
+              '"Ford Prefect" &lt;ford@theguide.com&gt;',
+              '"Arthur Dent" &lt;has.no.tea@gmail.com&gt;',
+              '"Marvin the Paranoid Android" &lt;marv@googlemail.com&gt;',
+              'the.mice@magrathea.com',
+            ];
+          </CODE_SNIPPET>
+          <p>Long identifiers or values present problems for aligned
+             initialization lists, so always prefer non-aligned initialization.
+             For example:</p>
+          <CODE_SNIPPET>
+            final correctObject = {
+              a: 0,
+              b: 1,
+              lengthyName: 2
+            };
+          </CODE_SNIPPET>
+          <p>Not like this:</p>
+          <BAD_CODE_SNIPPET>
+            final wrongObject = {
+              a          : 0,
+              b          : 1,
+              lengthyName: 2
+            };
+          </BAD_CODE_SNIPPET>
+        </SUBSECTION>
+        <SUBSECTION title="Function Arguments">
+          <p>When possible, all function arguments should be listed on the same
+            line. If doing so would exceed the 80-column limit, the arguments
+            must be line-wrapped in a readable way. To save space, you may wrap
+            as close to 80 as possible, or put each argument on its own line to
+            enhance readability. The indentation may be either four spaces, or
+            aligned to the parenthesis. Below are the most common patterns for
+            argument wrapping:</p>
+          <CODE_SNIPPET>
+            // Four-space, wrap at 80.  Works with very long function names, survives
+            // renaming without reindenting, low on space.
+            f longFunctionThatDoesThingThatIsVeryDifficultToExplain(
+                veryDescriptiveArgumentNumberOne, veryDescriptiveArgumentTwo,
+                tableModelEventHandlerProxy, artichokeDescriptorAdapterIterator) {
+              // ...
+            };
+
+            // Four-space, one argument per line.  Works with long function names,
+            // survives renaming, and emphasizes each argument.
+            f longFunctionThatDoesThingThatIsVeryDifficultToExplain(
+                veryDescriptiveArgumentNumberOne,
+                veryDescriptiveArgumentTwo,
+                tableModelEventHandlerProxy,
+                artichokeDescriptorAdapterIterator) {
+              // ...
+            };
+
+            // Parenthesis-aligned indentation, wrap at 80.  Visually groups arguments,
+            // low on space.
+            f foo(veryDescriptiveArgumentNumberOne, veryDescriptiveArgumentTwo,
+                  tableModelEventHandlerProxy, artichokeDescriptorAdapterIterator) {
+              // ...
+            }
+          </CODE_SNIPPET>
+          <p>When the function call is itself indented, you're free to start the
+          4-space indent relative to the beginning of the original statement
+          or relative to the beginning of the current function call.
+          The following are all acceptable indentation styles.</p>
+          <CODE_SNIPPET>
+            if veryLongFunctionNameA(
+                veryLongArgumentName) {
+              veryLongFunctionNameC(veryLongFunctionNameD(
+                  veryLongFunctioNameE(
+                      veryLongFunctionNameF)));
+            }
+          </CODE_SNIPPET>
+        </SUBSECTION>
+        <SUBSECTION title="Passing Anonymous Functions">
+          <p>When declaring an anonymous function in the list of arguments for
+            a function call, the body of the function is indented two spaces
+            from the left edge of the statement, or two spaces from the left
+            edge of the function keyword. This is to make the body of the
+            anonymous function easier to read (i.e. not be all squished up into
+            the right half of the screen).</p>
+          <CODE_SNIPPET>
+            reallyLongFunctionName('whatever', f(a1 number, a2 number) {
+              if a1 == a2 {
+                someOtherLongFunctionName(a1);
+              } else {
+                andNowForSomethingCompletelyDifferent(a2);
+              }
+            });
+
+            final names = myExcellentMapFunction(
+                verboselyNamedCollectionOfItems,
+                f(item) {
+                  return item.name;
+                });
+          </CODE_SNIPPET>
+        </SUBSECTION>
+        <SUBSECTION title="Indenting wrapped lines">
+          <p>Except for <a href="#Array_and_Object_literals">array literals,
+            object literals</a>, and anonymous functions, all wrapped lines
+            should be indented either left-aligned to a sibling expression
+            above, or four spaces (not two spaces) deeper than a parent
+            expression (where "sibling" and "parent" refer to parenthesis
+            nesting level).
+          </p>
+
+          <CODE_SNIPPET>
+            thisIsAVeryLongVariableName =
+                hereIsAnEvenLongerOtherFunctionNameThatWillNotFitOnPrevLine();
+
+            thisIsAVeryLongVariableName = siblingOne + siblingTwo + siblingThree
+                + siblingFour + siblingFive + siblingSix + siblingSeven
+                + moreSiblingExpressions + allAtTheSameIndentationLevel;
+
+            thisIsAVeryLongVariableName =
+                operandOne + operandTwo + operandThree
+                + operandFour + operandFive * (
+                    aNestedChildExpression + shouldBeIndentedMore);
+
+            someValue = this.foo(
+                shortArg,
+                'Some really long string arg - this is a pretty common case, actually.',
+                shorty2,
+                this.bar());
+
+            if searchableCollection(allYourStuff).contains(theStuffYouWant)
+                &amp;&amp; !ambientNotification.isActive()
+                &amp;&amp; (
+                    client.isAmbientSupported()
+                    || client.alwaysTryAmbientAnyways()) {
+              ambientNotification.activate();
+            }
+          </CODE_SNIPPET>
+        </SUBSECTION>
+        <SUBSECTION title="Blank lines">
+          <p>Use newlines to group logically related pieces of code.
+            (However, also consider breaking logically related pieces of code
+            out into their own functions.)
+            For example:</p>
+          <CODE_SNIPPET>
+            doSomethingTo(x);
+            doSomethingElseTo(x);
+            andThen(x);
+
+            nowDoSomethingWith(y);
+
+            andNowWith(z);
+          </CODE_SNIPPET>
+        </SUBSECTION>
+        <SUBSECTION title="Binary and Ternary Operators">
+          <p>Always put the operator at the beginning of a new line, not the end
+          of the previous line.</p>
+          <CODE_SNIPPET>
+            final x = a ? b : c;  // All on one line if it will fit.
+
+            // Indent +4.
+            final y = someReallyLongCondition
+                ? longButSimpleOperandB : longButSimpleOperandC;
+
+            final z = complicatedA
+                + moreComplicatedB
+                + moreComplicatedC;
+          </CODE_SNIPPET>
+        </SUBSECTION>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Parentheses">
+      <SUMMARY>Only where required</SUMMARY>
+      <BODY>
+        <p>Use sparingly and in general only where required by the syntax
+          and semantics.</p>
+        <p>Never use parentheses for unary operators such as
+          <code>delete</code> and <code>typeof</code> or
+          after keywords such as <code>return</code>, <code>throw</code> as
+          well as others (<code>case</code>, <code>in</code> or
+          <code>new</code>).</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Strings">
+      <SUMMARY>Prefer ' over "</SUMMARY>
+      <BODY>
+        <p>
+          For consistency single-quotes (') are preferred to double-quotes (").
+        </p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Visibility (private and protected fields)">
+      <SUMMARY>Yes</SUMMARY>
+      <BODY>
+        <p>It is encouraged to use <code>private</code> fields liberally and
+           <code>protected</code> where it makes sense.</p>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Type Annotations">
+      <SUMMARY>Yes</SUMMARY>
+      <BODY>
+        <a name="JsTypes"/>
+        <p>When documenting a type in JSDoc, be as specific and accurate as
+          possible. The types we support are based on
+          <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html">
+            TypeScript
+          </a>.</p>
+        <SUBSECTION title="Types">
+          <table border="1" style="border-collapse:collapse" cellpadding="4">
+            <thead>
+              <tr>
+                <th>Syntax Name</th>
+                <th>Syntax</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Primitive Type</td>
+                <td>
+                  There are 3 primitive types:
+                  <code>boolean</code>,
+                  <code>number</code>, and
+                  <code>string</code>.
+                </td>
+                <td>Simply the name of a type.</td>
+              </tr>
+
+              <tr>
+                <td>Instance Type</td>
+                <td>
+                  <code>Object</code><br/>
+                  An instance of Object.<p/>
+                  <code>Function</code><br/>
+                  An instance of Function.<p/>
+                  <code>EventTarget</code><br/>
+                  An instance of a constructor that implements the EventTarget
+                  interface, or null.
+                </td>
+                <td>An instance of a constructor or interface function.<p/>
+
+                Constructor functions are usually defined with the
+                <code>class</code> syntax.<p/>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Enum Type</td>
+                <td>
+                  <code>EventType</code><br/>
+                  One of the values defined in the enum <code>EventType</code>.
+                </td>
+                <td>Enums are defined with <code>enum</code> syntax.<p />
+                <CODE_SNIPPET>
+                  enum EventType {
+                    CLICK,
+                    MOUSE_OVER,
+                    MOUSE_ENTER,
+                    MOUSE_LEAVE,
+                  }
+                </CODE_SNIPPET>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Type Application</td>
+                <td>
+                  <code>Array.&lt;string&gt;</code><br/>An array of strings.<p/>
+                  <code>Object.&lt;string, number&gt;</code>
+                  <br/>An object in which the keys are strings and the values
+                  are numbers. (Consider using
+                  <code>Map&lt;string, number&gt;</code> instead.)
+                </td>
+                <td>Parameterizes a type, by applying a set of type arguments
+                  to that type. The idea is analogous to generics in Java.
+                </td>
+              </tr>
+
+              <tr>
+                <td>Type Union</td>
+                <td>
+                  <code>number|boolean</code><br/>A number or a boolean.
+                </td>
+                <td>Indicates that a value might have type A OR type B.
+                </td>
+              </tr>
+
+              <tr>
+                <td>Function Type</td>
+                <td>
+                  <code>f(string, boolean)</code><br/>
+                  A function that takes two arguments (a string and a boolean),
+                  and has an unknown return value.<br/>
+                </td>
+                <td>Specifies a function.</td>
+              </tr>
+
+              <tr>
+                <td>Function Return Type</td>
+                <td>
+                  <code>f number</code><br/>
+                  A function that takes no arguments and returns a number.<br/>
+                </td>
+                <td>Specifies a function return type.</td>
+              </tr>
+
+              <tr>
+                <td>The <code>any</code> type</td>
+                <td><code>any</code></td>
+                <td>Indicates that the variable can take on any type.</td>
+              </tr>
+            </tbody>
+          </table>
+        </SUBSECTION>
+        <SUBSECTION title="Type Examples">
+          <p/>
+          <table border="1" style="border-collapse:collapse" cellpadding="4">
+            <thead>
+              <tr>
+                <th>Type Example</th>
+                <th>Value Examples</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr>
+                <td>number</td>
+                <td>
+                  <CODE_SNIPPET>
+                    1
+                    1.0
+                    -5
+                    1e5
+                    Math.PI
+                  </CODE_SNIPPET>
+                </td>
+                <td>
+                  Numeric value
+                </td>
+              </tr>
+
+              <tr>
+                <td>string</td>
+                <td>
+                  <CODE_SNIPPET>
+                    'Hello'
+                    "World"
+                    String(42)
+                  </CODE_SNIPPET>
+                </td>
+                <td>
+                  String value
+                </td>
+              </tr>
+
+              <tr>
+                <td>boolean</td>
+                <td>
+                  <CODE_SNIPPET>
+                    true
+                    false
+                    Boolean(0)
+                  </CODE_SNIPPET>
+                </td>
+                <td>
+                  Boolean value
+                </td>
+              </tr>
+
+              <tr>
+                <td>RegExp</td>
+                <td>
+                  <CODE_SNIPPET>
+                    new RegExp('hello')
+                    /world/g
+                  </CODE_SNIPPET></td><td>
+                </td>
+              </tr>
+
+              <tr>
+                <td>Date</td>
+                <td>
+                  <CODE_SNIPPET>
+                    new Date()
+                  </CODE_SNIPPET></td>
+                <td/>
+              </tr>
+
+              <tr>
+                <td>Array</td>
+                <td>
+                  <CODE_SNIPPET>
+                    ['foo', 0.3, null]
+                    []
+                  </CODE_SNIPPET>
+                </td>
+                <td>Untyped Array</td>
+              </tr>
+
+              <tr>
+                <td>Array.&lt;number&gt;</td>
+                <td>
+                  <CODE_SNIPPET>
+                    [11, 22, 33]
+                  </CODE_SNIPPET>
+                </td>
+                <td>
+                  An Array of numbers
+                </td>
+              </tr>
+
+              <tr>
+                <td>Array.&lt;Array.&lt;string&gt;&gt;</td>
+                <td>
+                  <CODE_SNIPPET>
+                    [['one', 'two', 'three'], ['foo', 'bar']]
+                  </CODE_SNIPPET>
+                </td>
+                <td>Array of Arrays of strings</td>
+              </tr>
+
+              <tr>
+                <td>Object</td>
+                <td>
+                  <CODE_SNIPPET>
+                    {}
+                    {'foo': 'abc', 'bar': 123, 'baz': null}
+                  </CODE_SNIPPET>
+                </td>
+                <td/>
+              </tr>
+
+              <tr>
+                <td>Object.&lt;string&gt;</td>
+                <td>
+                  <CODE_SNIPPET>
+                    {'foo': 'bar'}
+                  </CODE_SNIPPET>
+                </td>
+                <td>
+                  An Object in which the values are strings.
+                </td>
+              </tr>
+
+              <tr>
+                <td>Object.&lt;number, string&gt;</td>
+                <td>
+                  <CODE_SNIPPET>
+                    var obj = {};
+                    obj[1] = 'bar';
+                  </CODE_SNIPPET>
+                </td>
+                <td>
+                  An Object in which the keys are numbers and the values are
+                  strings.  <p/>Note that in JavaScript, the keys are always
+                  implicitly converted to strings, so
+                  <code>obj['1'] == obj[1]</code>.
+                  So the key will always be a string <code>Object.keys</code>.
+                </td>
+              </tr>
+
+              <tr>
+                <td>Function</td>
+                <td>
+                  <CODE_SNIPPET>
+                    f multiply(x number, y number) number {
+                      return x * y;
+                    }
+                  </CODE_SNIPPET>
+                </td>
+                <td>
+                  Function object
+                </td>
+              </tr>
+
+              <tr>
+                <td>f(number, number) number</td>
+                <td>
+                  <CODE_SNIPPET>
+                    f multiply(x number, y number) number {
+                      return x * y;
+                    }
+                  </CODE_SNIPPET>
+                </td>
+                <td>function value</td>
+              </tr>
+
+              <tr>
+                <td><a name="constructor-tag">SomeClass</a></td>
+                <td>
+                  <CODE_SNIPPET>
+                    class SomeClass {}
+
+                    new SomeClass();
+                  </CODE_SNIPPET>
+                </td>
+                <td/>
+              </tr>
+
+              <tr>
+                <td>MyEnum</td>
+                <td>
+                  <CODE_SNIPPET>
+                    enum MyEnum {
+                      FOO,
+                      BAR,
+                    };
+                  </CODE_SNIPPET>
+                </td>
+                <td><a name="enums">Enumeration</a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>HTMLElement</td>
+                <td>
+                  <CODE_SNIPPET>
+                    document.createElement('div')
+                  </CODE_SNIPPET>
+                </td>
+                <td>Elements in the DOM.</td>
+              </tr>
+
+              <tr>
+                <td>Node</td>
+                <td>
+                  <CODE_SNIPPET>
+                    document.body.firstChild
+                  </CODE_SNIPPET>
+                </td>
+                <td>Nodes in the DOM.</td>
+              </tr>
+
+              <tr>
+                <td>HTMLInputElement</td>
+                <td>
+                  <CODE_SNIPPET>
+                    htmlDocument.getElementsByTagName('input')[0]
+                  </CODE_SNIPPET>
+                </td>
+                <td>A specific type of DOM element.</td>
+              </tr>
+            </tbody>
+          </table>
+        </SUBSECTION>
+
+        <SUBSECTION title="Type Casts">
+          <p>In cases where type-checking doesn't accurately infer the type of
+             an expression, it is possible to cast a value to a specific
+             type.</p>
+
+          <CODE_SNIPPET>
+            &lt;number&gt; x
+          </CODE_SNIPPET>
+        </SUBSECTION>
+
+        <SUBSECTION title="Template types">
+          <a name="Template_types"/>
+          <p>You can specify template types.</p>
+
+          <CODE_SNIPPET>
+            class Foo&lt;T&gt; {
+              private final value T;
+
+              constructor(this.value T);
+
+              // A method which returns the template type T
+              getValue() T {
+                return this.value;
+              }
+            }
+
+            // You can specify what type is used when the class is instantiated.
+            final foo = new Foo&lt;number&gt;(5);
+            foo.getValue(); // returns 5
+          </CODE_SNIPPET>
+        </SUBSECTION>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Comments">
+      <SUMMARY>Use where appropriate</SUMMARY>
+      <BODY>
+        <p>
+          We desire to follow the
+          <a href="https://google.github.io/styleguide/cppguide.html#Comments">
+            C++ style for comments</a> in spirit.
+        </p>
+
+        <p>Inline comments should be of the <code>//</code> variety.</p>
+
+        <p>Complete sentences are recommended but not required.
+        Complete sentences should use appropriate capitalization
+        and punctuation.</p>
+
+        <SUBSECTION title="Markdown in comments">
+          <p>It is recommend to use markdown in comments where appropriate.</p>
+
+          <p>This means that plaintext formatting is not respected. So, don't
+            rely on whitespace to format comments:</p>
+
+          <BAD_CODE_SNIPPET>
+            /**
+             * Computes weight based on three factors:
+             *   items sent
+             *   items received
+             *   last timestamp
+             */
+          </BAD_CODE_SNIPPET>
+
+          <p>It could be interpreted like this by automated tools:</p>
+
+          <BAD_CODE_SNIPPET>
+          Computes weight based on three factors: items sent items received last timestamp
+          </BAD_CODE_SNIPPET>
+
+          <p>Instead, do this:</p>
+
+          <CODE_SNIPPET>
+            /**
+             * Computes weight based on three factors:
+             * - items sent
+             * - items received
+             * - last timestamp
+             */
+          </CODE_SNIPPET>
+        </SUBSECTION>
+      </BODY>
+    </STYLEPOINT>
+
+    <STYLEPOINT title="Tips and Tricks">
+      <SUMMARY>JavaScript tidbits</SUMMARY>
+      <BODY>
+        <SUBSECTION title="True and False Boolean Expressions">
+          <p>The following are all false in boolean expressions:</p>
+          <ul>
+            <li><code>null</code></li>
+            <li><code>undefined</code></li>
+            <li><code>''</code> the empty string</li>
+            <li><code>0</code> the number</li>
+          </ul>
+          <p>But be careful, because these are all true:</p>
+          <ul>
+            <li><code>'0'</code> the string</li>
+            <li><code>[]</code> the empty array</li>
+            <li><code>{}</code> the empty object</li>
+          </ul>
+
+          <p>This means that instead of this:</p>
+          <CODE_SNIPPET>
+            while x != null {
+          </CODE_SNIPPET>
+          <p>you can write this shorter code (as long as you don't expect x to
+            be 0, or the empty string, or false):</p>
+          <CODE_SNIPPET>
+            while x {
+          </CODE_SNIPPET>
+
+          <p>And if you want to check a string to see if it is null or empty,
+            you could do this:</p>
+          <BAD_CODE_SNIPPET>
+            if y != null &amp;&amp; y != '' {
+          </BAD_CODE_SNIPPET>
+          <p>But this is shorter and nicer:</p>
+          <CODE_SNIPPET>
+            if y {
+          </CODE_SNIPPET>
+
+          <p><strong>Caution:</strong> There are many unintuitive things about
+            boolean expressions.  Here are some of them:</p>
+          <ul>
+            <li><code>
+              !!'0' == true<br/>
+              '0' != true</code></li>
+            <li><code>
+              0 != null<br/>
+              0 == []<br/>
+              0 == false</code></li>
+            <li><code>
+              !!null == false<br/>
+              null != true<br/>
+              null != false</code></li>
+            <li><code>
+              !![] == true<br/>
+              [] != true<br/>
+              [] == false</code></li>
+            <li><code>
+              !!{} == true<br/>
+              {} != true<br/>
+              {} != false</code></li>
+            <li>
+              trying <code>Object.create(null) == 0</code>
+              throws an exception</li>
+            <li><code>
+              nan !== nan</code></li>
+          </ul>
+        </SUBSECTION>
+
+        <SUBSECTION title="Conditional (Ternary) Operator (?:)">
+          <p>Instead of this:</p>
+          <CODE_SNIPPET>
+            if val {
+              return foo();
+            } else {
+              return bar();
+            }
+          </CODE_SNIPPET>
+          <p>you can write this:</p>
+          <CODE_SNIPPET>
+            return val ? foo() : bar();
+          </CODE_SNIPPET>
+        </SUBSECTION>
+
+        <SUBSECTION title="&amp;&amp; and ||">
+          <p>These binary boolean operators are short-circuited, and evaluate
+            to the last evaluated term.</p>
+
+          <p>"&amp;&amp;" is also useful for shortening code. For instance,
+            instead of this:</p>
+          <BAD_CODE_SNIPPET>
+            if (node) {
+              if (node.kids) {
+                if (node.kids[index]) {
+                  foo(node.kids[index]);
+                }
+              }
+            }
+          </BAD_CODE_SNIPPET>
+
+          <p>you could do this:</p>
+          <CODE_SNIPPET>
+            if (node &amp;&amp; node.kids &amp;&amp; node.kids[index]) {
+              foo(node.kids[index]);
+            }
+          </CODE_SNIPPET>
+
+          <p>or this:</p>
+          <CODE_SNIPPET>
+            var kid = node &amp;&amp; node.kids &amp;&amp; node.kids[index];
+            if (kid) {
+              foo(kid);
+            }
+          </CODE_SNIPPET>
+
+          <p>However, this is going a little too far:</p>
+          <BAD_CODE_SNIPPET>
+            node &amp;&amp; node.kids &amp;&amp; node.kids[index] &amp;&amp; foo(node.kids[index]);
+          </BAD_CODE_SNIPPET>
+        </SUBSECTION>
+      </BODY>
+    </STYLEPOINT>
+  </CATEGORY>
+
+  <p class="revision">
+    Revision 1
+  </p>
+
+  <address>
+    Derived from the
+    <a href="https://google.github.io/styleguide/javascriptguide.xml">
+      Google JavaScript Style Guide
+    </a>
+  </address>
+</GUIDE>
